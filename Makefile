@@ -14,8 +14,7 @@ export PATH := $(path_to_add):$(PATH)
 GO        := GO111MODULE=on go
 GOBUILD   := CGO_ENABLED=0 $(GO) build $(BUILD_FLAG)
 GOTEST    := CGO_ENABLED=1 $(GO) test -p 3
-OVERALLS  := CGO_ENABLED=1 overalls
-GOVERALLS := goveralls
+OVERALLS  := CGO_ENABLED=1 GO111MODULE=on overalls
 
 ARCH      := "`uname -s`"
 LINUX     := "Linux"
@@ -125,10 +124,10 @@ gotest:
 ifeq ("$(TRAVIS_COVERAGE)", "1")
 	@echo "Running in TRAVIS_COVERAGE mode."
 	@export log_level=error; \
-	go get github.com/go-playground/overalls
-	go get github.com/mattn/goveralls
-	$(OVERALLS) -project=github.com/pingcap/tidb -covermode=count -ignore='.git,vendor,cmd,docs,LICENSES' || { $(GOFAIL_DISABLE); exit 1; }
-	$(GOVERALLS) -service=travis-ci -coverprofile=overalls.coverprofile || { $(GOFAIL_DISABLE); exit 1; }
+	$(GO) get github.com/go-playground/overalls
+	$(OVERALLS) -project=github.com/pingcap/tidb -covermode=count -ignore='.git,vendor,cmd,docs,LICENSES'  -concurrency=1 || { $(GOFAIL_DISABLE); exit 1; }
+	mv overalls.coverprofile coverage.txt
+	bash -c "bash <(curl -s https://codecov.io/bash)"
 else
 	@echo "Running in native mode."
 	@export log_level=error; \
