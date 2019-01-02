@@ -23,5 +23,4 @@ before_install:
   # See https://github.com/golang/go/issues/12933
   - bash gitcookie.sh
 script:
-  - make dev
-  - make upload-coverage
+  - make dev upload-coverage
