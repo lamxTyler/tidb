@@ -116,6 +116,13 @@ test: checklist checkdep gotest explaintest
 explaintest: server
 	@cd cmd/explaintest && ./run-tests.sh -s ../../bin/tidb-server
 
+upload-coverage: SHELL:=/bin/bash
+upload-coverage:
+ifeq ("$(TRAVIS_COVERAGE)", "1")
+	mv overalls.coverprofile coverage.txt
+	bash <(curl -s https://codecov.io/bash)
+endif
+
 gotest:
 	@rm -rf $GOPATH/bin/gofail
 	$(GO) get github.com/pingcap/gofail
@@ -125,9 +132,7 @@ ifeq ("$(TRAVIS_COVERAGE)", "1")
 	@echo "Running in TRAVIS_COVERAGE mode."
 	@export log_level=error; \
 	$(GO) get github.com/go-playground/overalls
-	$(OVERALLS) -project=github.com/pingcap/tidb -covermode=count -ignore='.git,vendor,cmd,docs,LICENSES'  -concurrency=1 || { $(GOFAIL_DISABLE); exit 1; }
-	mv overalls.coverprofile coverage.txt
-	bash -c "bash <(curl -s https://codecov.io/bash)"
+	$(OVERALLS) -project=github.com/pingcap/tidb -covermode=count -ignore='.git,vendor,cmd,docs,LICENSES' -concurrency=2 || { $(GOFAIL_DISABLE); exit 1; }
 else
 	@echo "Running in native mode."
 	@export log_level=error; \
