@@ -1179,6 +1179,7 @@ func (s *serialTestStateChangeSuite) TestParallelFlashbackTable(c *C) {
 	// Test parallel flashback table.
 	ts := getDDLJobStartTime(tk, "test_db_state", "t")
 	sql1 := fmt.Sprintf("flashback table t until timestamp '%v' to t_flashback", ts)
+	fmt.Printf("%v\n", ts)
 	f := func(c *C, err1, err2 error) {
 		c.Assert(err1, IsNil)
 		c.Assert(err2, NotNil)

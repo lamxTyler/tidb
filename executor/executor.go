@@ -408,15 +408,6 @@ func (e *ShowDDLJobsExec) Next(ctx context.Context, req *chunk.Chunk) error {
 		schemaName := e.jobs[i].SchemaName
 		tableName := ""
 		finishTS := uint64(0)
-		if e.jobs[i].BinlogInfo != nil {
-			finishTS = e.jobs[i].BinlogInfo.FinishedTS
-			if e.jobs[i].BinlogInfo.TableInfo != nil {
-				tableName = e.jobs[i].BinlogInfo.TableInfo.Name.L
-			}
-			if len(schemaName) == 0 && e.jobs[i].BinlogInfo.DBInfo != nil {
-				schemaName = e.jobs[i].BinlogInfo.DBInfo.Name.L
-			}
-		}
 		// For compatibility, the old version of DDL Job wasn't store the schema name and table name.
 		if len(schemaName) == 0 {
 			schemaName = getSchemaName(e.is, e.jobs[i].SchemaID)
